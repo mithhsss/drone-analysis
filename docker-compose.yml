@@ -1,0 +1,26 @@
+services:
+  api:
+    build: 
+      context: ./api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+    environment:
+      - DATABASE_URL=postgresql://user:password@db/dbname
+  
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - api
+
+  mcp_server:
+    build:
+      context: ./mcp_server
+    volumes:
+      - ./mcp_server:/app

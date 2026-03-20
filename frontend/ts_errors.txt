@@ -1,0 +1,10 @@
+﻿src/App.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/chat/ChatAssistant.tsx(16,54): error TS6133: 'activeTab' is declared but its value is never read.
+src/components/layout/Navbar.tsx(2,21): error TS2305: Module '"lucide-react"' has no exported member 'Drone'.
+src/components/layout/Navbar.tsx(2,21): error TS6133: 'Drone' is declared but its value is never read.
+src/components/layout/RightPanel.tsx(2,30): error TS6133: 'Cpu' is declared but its value is never read.
+src/components/layout/RightPanel.tsx(2,35): error TS6133: 'PieChart' is declared but its value is never read.
+src/components/layout/RightPanel.tsx(2,83): error TS6133: 'FileJson' is declared but its value is never read.
+src/components/viz/DashboardViz.tsx(1,1): error TS6133: 'React' is declared but its value is never read.
+src/components/viz/DashboardViz.tsx(2,10): error TS6133: 'LineChart' is declared but its value is never read.
+src/components/viz/DashboardViz.tsx(2,21): error TS6133: 'Line' is declared but its value is never read.
