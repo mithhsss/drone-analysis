@@ -3,7 +3,7 @@ Flight Time Calculator Tool for MCP
 Calculates estimated drone flight time based on battery, weight, payload, and conditions.
 """
 
-from mcp_server.rag_bridge import query_pinecone_filtered, format_citations
+from mcp_server.rag_bridge import query_pinecone_filtered, format_citations, format_rag_output
 
 
 def calculate_flight_time(
@@ -13,6 +13,10 @@ def calculate_flight_time(
     wind_speed_kmh: float = 0.0,
     temperature_celsius: float = 25.0,
 ) -> dict:
+    """
+    Calculates estimated and safe drone flight times based on battery capacity, drone weight, payload weight, wind speed, and temperature.
+    Returns flight time in minutes and an estimated range.
+    """
     warnings: list[str] = []
     rag_context: list[str] = []
     citations: list[str] = []
@@ -23,7 +27,7 @@ def calculate_flight_time(
             f"drone battery efficiency flight time {drone_weight_kg}kg specifications",
             category="drone_specs", top_k=3,
         )
-        rag_context = [c["text"][:200] for c in chunks]
+        rag_context = [c["text"] for c in chunks]
         citations = format_citations(chunks)
     except Exception:
         rag_context = ["RAG system unavailable — using formula-only calculation."]

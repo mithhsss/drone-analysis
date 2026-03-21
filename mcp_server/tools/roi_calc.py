@@ -3,7 +3,7 @@ ROI Calculator Tool for MCP
 Calculates ROI, break-even, and profitability for drone business operations in India.
 """
 
-from mcp_server.rag_bridge import query_pinecone_filtered, format_citations
+from mcp_server.rag_bridge import query_pinecone_filtered, format_citations, format_rag_output
 
 
 def calculate_roi(
@@ -13,6 +13,10 @@ def calculate_roi(
     monthly_revenue_inr: float,
     financing_months: int = 0,
 ) -> dict:
+    """
+    Calculates the Return on Investment (ROI), break-even timeline, and profitability for a drone use case in India. 
+    Returns financial metrics including monthly profit, break-even months, and 12-to-36 month ROI percentages.
+    """
     rag_insights: list[str] = []
     citations: list[str] = []
     sources: list[str] = []
@@ -23,7 +27,7 @@ def calculate_roi(
             f"drone ROI {use_case} India revenue profit case study break-even",
             category="use_case_roi", top_k=5,
         )
-        rag_insights = [c["text"][:250] for c in chunks]
+        rag_insights = [c["text"] for c in chunks]
         citations = format_citations(chunks)
         sources = list(set(c["source"] for c in chunks))
     except Exception:

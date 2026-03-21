@@ -3,7 +3,7 @@ Drone Selector Tool for MCP
 Recommends suitable drone models based on use case, budget, and requirements.
 """
 
-from mcp_server.rag_bridge import query_pinecone_filtered, format_citations
+from mcp_server.rag_bridge import query_pinecone_filtered, format_citations, format_rag_output
 
 
 def select_drone(
@@ -13,6 +13,10 @@ def select_drone(
     flight_time_required_min: float = 20.0,
     indoor_use: bool = False,
 ) -> dict:
+    """
+    Selects and recommends the best drone models based on the user's specific use case, allocated budget in INR, payload requirement, required flight time, and whether it's for indoor use.
+    Returns drone hardware recommendations and considerations.
+    """
     recommendations: list[str] = []
     citations: list[str] = []
     rag_sources_used = 0
@@ -37,7 +41,7 @@ def select_drone(
                 deduped.append(c)
 
         rag_sources_used = len(deduped)
-        recommendations = [c["text"][:250] for c in deduped[:5]]
+        recommendations = [c["text"] for c in deduped[:5]]
         citations = format_citations(deduped)
     except Exception:
         recommendations = ["RAG system unavailable. Please ensure Pinecone is running."]

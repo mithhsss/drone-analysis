@@ -21,6 +21,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
+from langchain_experimental.text_splitter import SemanticChunker
 from pinecone import Pinecone
 import google.generativeai as genai
 
@@ -37,30 +38,49 @@ if not pinecone_api_key or not gemini_api_key:
 
 # Initialize Pinecone
 pc = Pinecone(api_key=pinecone_api_key)
-index_name = "drone-intelligence"
+index_name = "drone-intelligence1"
 
-# Check if index exists, for this script we assume the user has created it in the console
+# Check if index exists
 if index_name not in pc.list_indexes().names():
     print(f"Warning: Index '{index_name}' does not exist in your Pinecone account.")
-    print("Please create it in the console with dimension=768 (for gemini-embedding-exp-03-07 or similar Gemini models).")
+    print("Please create it in the console with dimension=3072.")
     exit(1)
 
 # Get direct index reference for CSV/text upserts
 index = pc.Index(index_name)
 
-# Initialize Gemini Embeddings (Langchain wrapper — used by PDF ingestion)
-embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001")
+# Initialize Gemini Embeddings (used by PDF ingestion via Langchain and by SemanticChunker)
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="gemini-embedding-001",
+    google_api_key=gemini_api_key,
+)
 
-# Configure google.generativeai for direct embedding calls (CSV/text ingestion)
+# Configure google.generativeai for direct embedding calls (CSV ingestion)
 genai.configure(api_key=gemini_api_key)
 
-# Chunking Configuration (for PDFs)
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=200,
+# --- CHUNKING STRATEGIES ---
+
+# PDF: larger fixed chunks (2000 chars / ~512 tokens) with overlap
+# absorbs PDF extraction noise; ensures cross-page sentences are retrievable.
+pdf_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=2000,
+    chunk_overlap=300,
+    separators=["\n\n", "\n", ". ", " ", ""],
     length_function=len,
     is_separator_regex=False,
 )
+
+# Text files: SemanticChunker splits at meaning boundaries, not character counts.
+# breakpoint_threshold_amount=85 → split when semantic distance is in top 15%
+# of all distances in the document (keeps related sentences together).
+text_semantic_splitter = SemanticChunker(
+    embeddings=embeddings,
+    breakpoint_threshold_type="percentile",
+    breakpoint_threshold_amount=85,
+)
+
+# CSV rows: NO splitter — each row is already one atomic fact.
+# text_builder_fn converts row → one complete descriptive sentence. Store as-is.
 
 
 # ===========================================================================
@@ -102,8 +122,8 @@ def ingest_pdfs(source_dir: str):
             if 'page' in doc.metadata:
                 doc.metadata["page_number"] = doc.metadata['page'] + 1 # 1-indexed
 
-        # Split documents into chunks
-        chunks = text_splitter.split_documents(documents)
+        # Split documents into chunks using the PDF-specific splitter
+        chunks = pdf_splitter.split_documents(documents)
         print(f"Created {len(chunks)} chunks for {filename}.")
         
         # Upsert chunks into Pinecone
@@ -232,10 +252,12 @@ def ingest_csv(filepath, category: str, text_builder_fn):
 # TEXT DOCUMENT INGESTION
 # ===========================================================================
 
-def ingest_txt_chunks(filepath, chunk_size: int = 800, overlap: int = 100):
+def ingest_txt_chunks(filepath):
     """
-    Ingest a text file into Pinecone using sliding window chunking.
-    Tries to break at sentence boundaries (". ").
+    Ingest a text file into Pinecone using SemanticChunker.
+    Splits at meaning boundaries (top-15% semantic distance between sentences)
+    rather than fixed character counts, producing variable-length but
+    coherent chunks.
     """
     filepath = Path(filepath)
     if not filepath.exists():
@@ -244,44 +266,58 @@ def ingest_txt_chunks(filepath, chunk_size: int = 800, overlap: int = 100):
 
     filename = filepath.name
     stem = filepath.stem
-    print(f"\nIngesting {filename}...")
+    print(f"\nIngesting {filename} with SemanticChunker...")
 
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
 
-    chunks = []
-    start = 0
-    while start < len(content):
-        end = start + chunk_size
-        if end < len(content):
-            # Try to break at sentence boundary
-            break_at = content.rfind(". ", start, end)
-            if break_at > start:
-                end = break_at + 2  # Include the ". "
-        chunk = content[start:end].strip()
-        if len(chunk) >= 50:
-            chunks.append(chunk)
-        start = end - overlap
+    # Create Langchain Documents from the full text, then semantic-chunk
+    from langchain_core.documents import Document
+    import time as _time
+    docs = [Document(page_content=content, metadata={"source": filename})]
+
+    try:
+        chunks = text_semantic_splitter.split_documents(docs)
+    except Exception as e:
+        print(f"  SemanticChunker failed ({e}), falling back to paragraph split.")
+        chunks = [Document(page_content=p.strip(), metadata={"source": filename})
+                  for p in content.split("\n\n") if len(p.strip()) >= 100]
+
+    valid_chunks = [c for c in chunks if len(c.page_content.strip()) >= 100]
+    print(f"  Produced {len(valid_chunks)} semantic chunks (from {len(chunks)} raw).")
 
     batch = []
-    for i, chunk in enumerate(chunks):
-        embedding = embed_text(chunk)
-        citation = build_txt_citation(filename, i, chunk)
-        metadata = {**citation, "text": chunk}
+    for i, chunk in enumerate(valid_chunks):
+        text = chunk.page_content.strip()
+
+        # Detect section heading: scan backwards for ALL-CAPS line under 80 chars
+        section_heading = "General"
+        for line in reversed(text.split("\n")):
+            stripped = line.strip()
+            if (stripped and len(stripped) < 80
+                    and stripped == stripped.upper()
+                    and any(c.isalpha() for c in stripped)):
+                section_heading = stripped.title()
+                break
+
+        citation = build_txt_citation(filename, i, text)
+        citation["section_heading"] = section_heading
+        citation["citation_label"] = f"{filename} (chunk {i}, section: {section_heading})"
+        metadata = {**citation, "text": text}
         vector_id = f"doc_{stem}_{i}"
 
-        batch.append({"id": vector_id, "values": embedding, "metadata": metadata})
-        print(f"  Chunk {i}: section={citation['section_heading']}, chars={len(chunk)}")
+        batch.append({"id": vector_id, "values": embed_text(text), "metadata": metadata})
+        print(f"  Chunk {i}: section={section_heading}, words={len(text.split())}")
 
         if len(batch) >= 5:
             index.upsert(vectors=[(v["id"], v["values"], v["metadata"]) for v in batch])
             batch = []
-            time.sleep(1)  # Rate limit protection
+            _time.sleep(1)  # Gemini rate-limit protection
 
     if batch:
         index.upsert(vectors=[(v["id"], v["values"], v["metadata"]) for v in batch])
 
-    print(f"  Done: {len(chunks)} chunks from {filename}")
+    print(f"  Done: {len(valid_chunks)} chunks from {filename}")
 
 
 # ===========================================================================
@@ -289,95 +325,105 @@ def ingest_txt_chunks(filepath, chunk_size: int = 800, overlap: int = 100):
 # ===========================================================================
 
 if __name__ == "__main__":
-    DATA_RAW = Path(os.path.dirname(__file__)) / ".." / "data" / "raw"
-    DATA_RAW = DATA_RAW.resolve()
+    import sys
+    mode = sys.argv[1] if len(sys.argv) > 1 else "all"
+
+    DATA_DIR = Path(os.path.dirname(__file__)) / ".." / "data"
+    DATA_DIR = DATA_DIR.resolve()
+
+    DATA_STRUCTURED = DATA_DIR / "structured"
+    DATA_UNSTRUCTURED = DATA_DIR / "unstructured"
 
     # Ensure directories exist
-    os.makedirs(DATA_RAW, exist_ok=True)
-    os.makedirs(DATA_RAW / "text_docs", exist_ok=True)
+    os.makedirs(DATA_STRUCTURED, exist_ok=True)
+    os.makedirs(DATA_UNSTRUCTURED, exist_ok=True)
 
-    # --- Existing PDF ingestion ---
-    print("=== INGESTING PDFs ===")
-    ingest_pdfs(str(DATA_RAW))
+    # --- PDF ingestion ---
+    if mode in ("all", "pdf"):
+        print("=== INGESTING PDFs ===")
+        ingest_pdfs(str(DATA_UNSTRUCTURED))
 
     # --- CSV ingestion ---
-    print("\n=== INGESTING CSVs ===")
+    if mode in ("all", "csv"):
+        print("\n=== INGESTING CSVs ===")
 
-    ingest_csv(DATA_RAW / "drone_models.csv", "drone_specs",
-        lambda r: (
-            f"Drone model: {r['model_name']} by {r['manufacturer']} ({r['manufacturer_country']}). "
-            f"Category: {r['category']}. Weight: {r['weight_kg']}kg. "
-            f"Max payload: {r['max_payload_kg']}kg. Battery: {r['battery_mah']}mAh. "
-            f"Flight time: {r['max_flight_time_min']} minutes. Range: {r['max_range_km']}km. "
-            f"Price: INR {r['price_inr']} (USD {r['price_usd']}). "
-            f"DGCA category: {r['dgca_category']}. Made in India: {r['made_in_india']}. "
-            f"Use cases: {r['use_cases']}."
+        ingest_csv(DATA_STRUCTURED / "drone_models.csv", "drone_specs",
+            lambda r: (
+                f"Drone model: {r['model_name']} by {r['manufacturer']} ({r['manufacturer_country']}). "
+                f"Category: {r['category']}. Weight: {r['weight_kg']}kg. "
+                f"Max payload: {r['max_payload_kg']}kg. Battery: {r['battery_mah']}mAh. "
+                f"Flight time: {r['max_flight_time_min']} minutes. Range: {r['max_range_km']}km. "
+                f"Price: INR {r['price_inr']} (USD {r['price_usd']}). "
+                f"DGCA category: {r['dgca_category']}. Made in India: {r['made_in_india']}. "
+                f"Use cases: {r['use_cases']}."
+            )
         )
-    )
 
-    ingest_csv(DATA_RAW / "regulations.csv", "regulation",
-        lambda r: (
-            f"DGCA Regulation: {r['rule_title']}. Category: {r['category']}. "
-            f"Description: {r['description']} "
-            f"Applicable to: {r['applicable_to']}. "
-            f"Penalty: INR {r['penalty_inr']} - {r['penalty_description']}. "
-            f"Source: {r['source']}. Effective: {r['effective_date']}."
+        ingest_csv(DATA_STRUCTURED / "regulations.csv", "regulation",
+            lambda r: (
+                f"DGCA Regulation: {r['rule_title']}. Category: {r['category']}. "
+                f"Description: {r['description']} "
+                f"Applicable to: {r['applicable_to']}. "
+                f"Penalty: INR {r['penalty_inr']} - {r['penalty_description']}. "
+                f"Source: {r['source']}. Effective: {r['effective_date']}."
+            )
         )
-    )
 
-    ingest_csv(DATA_RAW / "use_cases_roi.csv", "use_case_roi",
-        lambda r: (
-            f"Drone use case: {r['use_case_name']} in {r['sector']} sector. "
-            f"{r['description']} "
-            f"Recommended drone: {r['recommended_drone_category']} category. "
-            f"Average drone cost: INR {r['avg_drone_cost_inr']}. "
-            f"Monthly operational cost: INR {r['monthly_operational_cost_inr']}. "
-            f"Monthly revenue: INR {r['monthly_revenue_inr']}. "
-            f"Break-even: {r['breakeven_months']} months. "
-            f"ROI year 1: {r['roi_year1_percent']}%. ROI year 3: {r['roi_year3_percent']}%. "
-            f"States: {r['state_adoption']}."
+        ingest_csv(DATA_STRUCTURED / "use_cases_roi.csv", "use_case_roi",
+            lambda r: (
+                f"Drone use case: {r['use_case_name']} in {r['sector']} sector. "
+                f"{r['description']} "
+                f"Recommended drone: {r['recommended_drone_category']} category. "
+                f"Average drone cost: INR {r['avg_drone_cost_inr']}. "
+                f"Monthly operational cost: INR {r['monthly_operational_cost_inr']}. "
+                f"Monthly revenue: INR {r['monthly_revenue_inr']}. "
+                f"Break-even: {r['breakeven_months']} months. "
+                f"ROI year 1: {r['roi_year1_percent']}%. ROI year 3: {r['roi_year3_percent']}%. "
+                f"States: {r['state_adoption']}."
+            )
         )
-    )
 
-    ingest_csv(DATA_RAW / "companies_startups.csv", "company",
-        lambda r: (
-            f"Indian drone company: {r['company_name']}, founded {r['founded_year']}, "
-            f"in {r['headquarters']}. Type: {r['type']}. Focus: {r['focus_area']}. "
-            f"Funding: INR {r['funding_raised_cr']} crore. Employees: {r['employees']}. "
-            f"Key product: {r['key_product']}. Clients: {r['notable_clients']}."
+        ingest_csv(DATA_STRUCTURED / "companies_startups.csv", "company",
+            lambda r: (
+                f"Indian drone company: {r['company_name']}, founded {r['founded_year']}, "
+                f"in {r['headquarters']}. Type: {r['type']}. Focus: {r['focus_area']}. "
+                f"Funding: INR {r['funding_raised_cr']} crore. Employees: {r['employees']}. "
+                f"Key product: {r['key_product']}. Clients: {r['notable_clients']}."
+            )
         )
-    )
 
-    ingest_csv(DATA_RAW / "training_institutes.csv", "training_institute",
-        lambda r: (
-            f"Drone training institute: {r['institute_name']} in {r['city']}, {r['state']}. "
-            f"DGCA approved: {r['dgca_approved']}. Courses: {r['courses_offered']}. "
-            f"Duration: {r['duration_days']} days. Fee: INR {r['fee_inr']}. "
-            f"Facilities: {r['facilities']}."
+        ingest_csv(DATA_STRUCTURED / "training_institutes.csv", "training_institute",
+            lambda r: (
+                f"Drone training institute: {r['institute_name']} in {r['city']}, {r['state']}. "
+                f"DGCA approved: {r['dgca_approved']}. Courses: {r['courses_offered']}. "
+                f"Duration: {r['duration_days']} days. Fee: INR {r['fee_inr']}. "
+                f"Facilities: {r['facilities']}."
+            )
         )
-    )
 
-    ingest_csv(DATA_RAW / "synthetic_flight_data.csv", "flight_record",
-        lambda r: (
-            f"Flight record: {r['drone_model']} in {r['state']}, {r['district']}. "
-            f"Use case: {r['use_case']}. Date: {r['date']}. "
-            f"Duration: {r['flight_duration_min']} minutes. "
-            f"Distance: {r['distance_covered_km']}km. "
-            f"Area covered: {r['area_covered_acres']} acres. "
-            f"Weather: {r['weather_condition']}. Wind: {r['wind_speed_kmh']}kmh. "
-            f"Mission success: {r['mission_success']}. Incidents: {r['incidents']}."
+        ingest_csv(DATA_STRUCTURED / "synthetic_flight_data.csv", "flight_record",
+            lambda r: (
+                f"Flight record: {r['drone_model']} in {r['state']}, {r['district']}. "
+                f"Use case: {r['use_case']}. Date: {r['date']}. "
+                f"Duration: {r['flight_duration_min']} minutes. "
+                f"Distance: {r['distance_covered_km']}km. "
+                f"Area covered: {r['area_covered_acres']} acres. "
+                f"Weather: {r['weather_condition']}. Wind: {r['wind_speed_kmh']}kmh. "
+                f"Mission success: {r['mission_success']}. Incidents: {r['incidents']}."
+            )
         )
-    )
 
     # --- Text document ingestion ---
-    print("\n=== INGESTING TEXT DOCUMENTS ===")
-    TEXT_DOCS = DATA_RAW / "text_docs"
-    for txt_file in sorted(TEXT_DOCS.glob("*.txt")):
-        ingest_txt_chunks(txt_file)
+    if mode in ("all", "text"):
+        print("\n=== INGESTING TEXT DOCUMENTS ===")
+        TEXT_DOCS = DATA_UNSTRUCTURED
+        for txt_file in sorted(TEXT_DOCS.glob("*.txt")):
+            ingest_txt_chunks(txt_file)
 
     # --- Final stats ---
     stats = index.describe_index_stats()
     print(f"\n{'='*60}")
-    print(f"INGESTION COMPLETE")
+    print(f"INGESTION COMPLETE (mode={mode})")
     print(f"Total vectors in Pinecone: {stats.total_vector_count}")
     print(f"{'='*60}")
+

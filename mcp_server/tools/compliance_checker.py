@@ -3,7 +3,7 @@ Compliance Checker Tool for MCP
 Checks Indian DGCA regulatory compliance for drone operations.
 """
 
-from mcp_server.rag_bridge import query_pinecone_filtered, format_citations
+from mcp_server.rag_bridge import query_pinecone_filtered, format_citations, format_rag_output
 
 # DGCA weight classification — fixed Indian law
 WEIGHT_CATEGORIES = [
@@ -27,6 +27,10 @@ def check_compliance(
     location: str,
     has_remote_pilot_licence: bool = False,
 ) -> dict:
+    """
+    Checks if a drone operation complies with Indian DGCA regulations based on drone weight, use type (e.g. 'commercial' or 'recreational'), location, and license status.
+    Returns compliance status, required permits, and restrictions.
+    """
     dgca_rules: list[str] = []
     citations: list[str] = []
 
@@ -36,7 +40,7 @@ def check_compliance(
             f"DGCA regulations drone {drone_weight_kg}kg {use_type} permit licence {location}",
             category="regulation", top_k=5,
         )
-        dgca_rules = [c["text"][:300] for c in chunks]
+        dgca_rules = [c["text"] for c in chunks]
         citations = format_citations(chunks)
     except Exception:
         dgca_rules = ["RAG system unavailable — using hardcoded DGCA rules only."]

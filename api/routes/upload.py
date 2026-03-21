@@ -11,9 +11,7 @@ from api.services.analytics_service import analytics
 
 router = APIRouter()
 logger = logging.getLogger("api.upload")
-
-UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "raw" / "uploads"
-
+UPLOAD_DIR = Path(__file__).resolve().parent.parent.parent / "data" / "uploads"
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_file(file: UploadFile = File(...), description: str = Form(None)):

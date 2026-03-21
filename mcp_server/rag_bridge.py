@@ -33,7 +33,7 @@ def _ensure_initialized():
     genai.configure(api_key=google_api_key)
     _genai_configured = True
     _pc = Pinecone(api_key=pinecone_api_key)
-    _index = _pc.Index("drone-intelligence")
+    _index = _pc.Index("drone-intelligence1")
 
 
 def _embed_query(query: str) -> list[float]:
@@ -112,3 +112,52 @@ def format_citations(chunks: list[dict]) -> list[str]:
             else:
                 citations.append(source)
     return citations
+
+
+def extract_meaningful_excerpt(text: str, max_words: int = 60) -> str:
+    """
+    Returns a complete-sentence excerpt from text within max_words limit.
+    Never cuts mid-sentence. If the first sentence exceeds max_words,
+    truncates at the last complete word and appends '...'
+    If text fits within max_words, returns it fully without truncation.
+    """
+    if not text or not text.strip():
+        return ""
+
+    # count words
+    words = text.strip().split()
+    if len(words) <= max_words:
+        return text.strip()
+
+    # find sentence boundaries ('. ', '! ', '? ', '.\n')
+    import re
+    sentences = re.split(r'(?<=[.!?])\s+', text.strip())
+
+    result = ""
+    for sentence in sentences:
+        candidate = (result + " " + sentence).strip()
+        if len(candidate.split()) <= max_words:
+            result = candidate
+        else:
+            break
+
+    # if even first sentence is too long, truncate at word boundary
+    if not result:
+        result = " ".join(words[:max_words]) + "..."
+
+    return result.strip()
+
+
+def format_rag_output(chunks: list[dict], max_words_per_chunk: int = 60) -> list[str]:
+    """
+    Converts retrieved chunks to meaningful excerpts.
+    Each excerpt is a complete sentence or ends cleanly.
+    Returns list of strings ready to display to user.
+    """
+    output = []
+    for chunk in chunks:
+        text = chunk.get("text", "")
+        excerpt = extract_meaningful_excerpt(text, max_words=max_words_per_chunk)
+        if excerpt:
+            output.append(excerpt)
+    return output

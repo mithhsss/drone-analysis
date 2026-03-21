@@ -19,7 +19,7 @@ from mcp_server.tools.drone_selector import select_drone
 
 # Pinecone vector count
 pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
-idx = pc.Index("drone-intelligence")
+idx = pc.Index("drone-intelligence1")
 stats = idx.describe_index_stats()
 total_vectors = stats.total_vector_count
 print(f"Pinecone vector count: {total_vectors}")
