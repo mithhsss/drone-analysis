@@ -1,0 +1,70 @@
+DGCA Drone Regulations in India - Comprehensive Guide
+======================================================
+
+OVERVIEW OF DRONE RULES 2021
+India's Ministry of Civil Aviation notified the Drone Rules 2021 on August 25, 2021, replacing the earlier Unmanned Aircraft System Rules 2021. These rules dramatically simplified drone operations in India and created a more business-friendly environment while maintaining safety standards.
+
+WEIGHT-BASED CLASSIFICATION SYSTEM
+The DGCA classifies drones into five categories based on all-up weight (including payload):
+
+1. NANO DRONES (up to 250 grams)
+Nano drones are the most permissive category. No registration is required on the Digital Sky platform. No Remote Pilot Licence (RPL) is needed. Operations are permitted in green zones without prior permission. These drones are typically used for recreational photography, hobbyist use, and entry-level commercial work. Examples include DJI Mini 4 Pro and similar consumer drones.
+
+2. MICRO DRONES (250 grams to 2 kilograms)
+Micro drones require mandatory registration on the Digital Sky platform. For recreational use, no RPL is needed. For commercial operations, a valid RPL is required. These drones are popular for professional photography, inspection work, mapping, and light commercial applications. Registration involves submitting drone serial number, owner ID proof, and paying a nominal fee.
+
+3. SMALL DRONES (2 kilograms to 25 kilograms)
+Small drones require both registration and a Remote Pilot Licence for all operations (recreational and commercial). Agriculture drones typically fall in this category. The RPL requires passing a DGCA-approved examination at an authorised training organisation. Commercial operators also need a Non-Scheduled Operator Permit (NSOP). This is the most common category for professional drone services in India.
+
+4. MEDIUM DRONES (25 kilograms to 150 kilograms)
+Medium drones require full DGCA certification, including type certification of the drone model, operator certification, and pilot licensing. These are used primarily for defence, large cargo operations, and specialised industrial applications.
+
+5. LARGE DRONES (above 150 kilograms)
+Large drones require special DGCA approval and are governed by additional aviation regulations. Primarily used for cargo and defence applications.
+
+THE DIGITAL SKY PLATFORM
+Digital Sky (digitalsky.dgca.gov.in) is the online portal for all drone-related registrations, permits, and flight approvals in India. Key functions include:
+- UAS Registration and issuance of Unique Identification Number (UIN)
+- Remote Pilot Licence applications and management
+- NSOP applications for commercial operators
+- Green/Yellow/Red zone maps for flight planning
+- Flight plan submission for controlled airspace
+
+AIRSPACE ZONES
+India's airspace for drones is divided into three colour-coded zones:
+
+GREEN ZONES: Drones can operate without prior permission. Altitude limit of 120 metres. Covers most rural and semi-urban areas.
+
+YELLOW ZONES: Prior permission required from relevant authority. Includes areas near airports (5-45km radius), controlled airspace, and areas designated by state governments. Permission obtained through Digital Sky platform.
+
+RED ZONES: Strictly prohibited for civilian drones without special clearance from MHA and DGCA. Includes areas within 5km of airports, international borders (25km), military installations, Parliament House, and other sensitive areas.
+
+REMOTE PILOT LICENCE (RPL) PROCESS
+1. Enrol in a DGCA-approved training organisation
+2. Complete ground school training (minimum requirements vary)
+3. Complete simulator training
+4. Complete actual flight training
+5. Pass DGCA written examination
+6. Pass practical flight test
+7. Apply for RPL through Digital Sky platform
+8. RPL valid for 10 years, renewable
+
+AGRICULTURE DRONE SPECIFIC RULES
+Agriculture drones used for spraying pesticides or fertilisers require:
+- Drone registration and pilot RPL as applicable
+- State agriculture department approval for commercial spraying operations
+- Trained and certified operators (Central Insecticides Board training preferred)
+- Use only DGCA type-certified drones
+- Operations only during permitted hours and in permitted zones
+
+The government's Kisan Drone initiative provides subsidies of up to 40-50% for farmer groups and FPOs purchasing agriculture drones.
+
+PENALTIES FOR VIOLATIONS
+- Operating unregistered drone: Fine up to INR 25,000
+- Flying without RPL (commercial): Fine up to INR 1,00,000 and possible imprisonment
+- Flying in red zone: Fine up to INR 5,00,000 and possible criminal prosecution
+- Violating no-fly zone near airport: Immediate seizure plus INR 50,000 fine
+- Data privacy violations: Civil liability plus potential IT Act prosecution
+
+RECENT AMENDMENTS AND PLI SCHEME
+The government announced a Production Linked Incentive (PLI) scheme for drones in 2021, providing incentives worth INR 120 crore to Indian drone manufacturers. Companies must achieve 50% domestic value addition to qualify. This has accelerated the growth of Indian drone manufacturers like ideaForge, Garuda Aerospace, and others.

@@ -1,0 +1,81 @@
+Agriculture Drone Use Cases in India - Case Studies and Success Stories
+========================================================================
+
+CASE STUDY 1: PADDY FARMING IN PUNJAB
+Location: Sangrur District, Punjab
+Operator: AgriDrone Services Pvt Ltd
+Drone Used: DJI Agras T40 (40 litre tank, 40 kg payload)
+Duration: Kharif Season 2023
+
+Background: Punjab has over 7 million acres of paddy cultivation. Traditional manual spraying requires 4-6 labourers per acre per application and takes significant time during critical crop windows.
+
+Implementation: A fleet of 12 DJI Agras T40 drones was deployed across 50 villages in Sangrur district through a drone-as-a-service model. Farmers paid INR 480 per acre for each spraying operation.
+
+Results:
+- Each drone covered 80-100 acres per day (vs 8-10 acres by manual team)
+- Labour cost reduced from INR 1,200 per acre to INR 480 per acre
+- Pesticide usage reduced by 30% due to precision application
+- Crop yield improved by 8-12% due to timely and uniform coverage
+- 245 farmers served across 3,800 acres in one season
+- Operator revenue: INR 18.2 lakh in single kharif season
+- Payback period: 8 months for INR 12 lakh investment (2 drones)
+
+Key Learnings: Success hinged on DGCA-certified operators, coordination with state agriculture department, and pre-season training for local pilots. Battery swapping stations every 5km were critical for operational efficiency.
+
+CASE STUDY 2: COTTON FARMING IN TELANGANA
+Location: Warangal and Karimnagar Districts, Telangana
+Operator: Marut Drones (company-operated fleet)
+Drone Used: Marut AG 365 (20 litre tank)
+Duration: Annual 2023
+
+Background: Cotton is Telangana's largest cash crop with high pesticide usage. Pink bollworm infestations in 2022 caused massive losses highlighting need for rapid response capability.
+
+Implementation: Marut Drones partnered with the Telangana government's farmer welfare scheme. Drones were deployed at INR 400 per acre with government subsidy reducing farmer cost to INR 200 per acre.
+
+Results:
+- 1.2 lakh acres covered across two districts in 2023
+- Pink bollworm containment improved by 45% vs previous year
+- Farmer savings: INR 600-800 per acre on labour and chemical costs
+- Employment generated: 180 drone pilots hired locally
+- Revenue to Marut Drones: INR 4.8 crore in the season
+
+CASE STUDY 3: MEDICAL DELIVERY IN MEGHALAYA
+Location: East Khasi Hills and Ri-Bhoi Districts, Meghalaya
+Operator: TechEagle Innovations (government contract)
+Drone Used: TechEagle VTOL (2kg payload, 30km range)
+Duration: Ongoing since 2022
+
+Background: Meghalaya's mountainous terrain makes road-based medical supply difficult. Many villages are 3-6 hours away by road from district hospitals, while drone flight takes 20-35 minutes.
+
+Implementation: Government of Meghalaya contracted TechEagle for last-mile medical delivery covering 30 delivery points across two districts. Deliveries include blood units, vaccines, emergency medicines, and rapid test kits.
+
+Results:
+- Average delivery time reduced from 4.5 hours to 28 minutes
+- 850+ deliveries completed in first year
+- 12 critical blood deliveries in emergency cases where road access was blocked
+- Zero delivery failures due to weather or technical issues
+- Government cost per delivery: INR 320 (vs INR 2,400 by road ambulance)
+- Lives saved: 3 documented cases of patients surviving due to timely blood delivery
+
+CASE STUDY 4: POWER LINE INSPECTION IN RAJASTHAN
+Location: Rajasthan Rajya Vidyut Prasaran Nigam network
+Operator: Skylark Drones (contract services)
+Drone Used: DJI Mavic 3 Enterprise + thermal sensor
+Duration: 2023 annual inspection programme
+
+Background: Rajasthan has over 80,000 km of transmission lines. Manual rope-access inspection is costly (INR 15,000-25,000 per km), slow (1-2 km per day per team), and risky.
+
+Implementation: Skylark Drones conducted thermal and visual inspection of 2,500 km of high-voltage lines in Western Rajasthan using a fleet of 8 drones with 4 operators.
+
+Results:
+- 2,500 km inspected in 45 days (vs 6+ months manual)
+- 847 fault points identified including 23 critical overheating joints
+- Inspection cost: INR 3,500 per km (vs INR 18,000-22,000 manual)
+- Prevented 4 major line failures estimated at INR 8-12 crore cost each
+- ROI of inspection programme: 2,400% (cost INR 87.5 lakh, prevented losses INR 32-48 crore)
+- Zero accidents vs 2 fatalities in previous manual inspection year
+
+MARKET SIZE AND PROJECTIONS
+India's drone services market was valued at USD 885 million in 2022 and is projected to reach USD 23.16 billion by 2030, growing at a CAGR of 51.1% (Source: FICCI-PwC report). Key drivers include government mandates, PLI scheme, rising agriculture costs, and infrastructure spending under Gati Shakti programme.
+
+Agriculture drones alone are expected to cover 50 million acres of cropland by 2025 under the government's drone didi initiative. The government has trained over 15,000 drone pilots under the Drone Shakti and Kisan Drone programmes as of 2024.

@@ -1,0 +1,72 @@
+﻿Pinecone vector count: 224
+
+============================================================
+TEST 1: Flight Time Calculator
+  Estimated flight time: 17.8 min
+  Safe flight time:     15.1 min
+  Total weight:         17.8 kg
+  Range estimate:       10.1 km
+  Warnings:             ['Payload of 8.0kg increases total weight to 17.8kg']
+  RAG LIVE: YES
+  CITATIONS:
+    - drone_models.csv (row 9), record_id: D009
+    - drone_models.csv (row 1), record_id: D001
+    - drone_models.csv (row 6), record_id: D006
+============================================================
+
+============================================================
+TEST 2: ROI Calculator
+  Verdict:         Profitable
+  Breakeven:       7.1 months
+  ROI 12 months:   68.0%
+  Monthly profit:  INR 63000
+  RAG LIVE: YES
+  CITATIONS:
+    - use_cases_roi.csv (row 1), record_id: UC001
+    - use_cases_roi.csv (row 2), record_id: UC002
+    - use_cases_roi.csv (row 9), record_id: UC009
+    - use_cases_roi.csv (row 10), record_id: UC010
+    - use_cases_roi.csv (row 3), record_id: UC003
+  First RAG insight: Drone use case: Crop Spraying in Agriculture sector. Precision pesticide and fertilizer spraying for large agricultural ...
+============================================================
+
+============================================================
+TEST 3: Compliance Checker
+  Category:        Small
+  Compliant:       False
+  Missing permits: ['Remote Pilot Licence']
+  RAG LIVE: YES
+  CITATIONS:
+    - regulations.csv (row 12), record_id: R012
+    - regulations.csv (row 10), record_id: R010
+    - regulations.csv (row 13), record_id: R013
+    - regulations.csv (row 2), record_id: R002
+    - regulations.csv (row 1), record_id: R001
+  First DGCA rule: DGCA Regulation: Weight Limits per Category. Category: Classification. Description: Nano: up to 250g. Micro: 250g-2kg. S...
+============================================================
+
+============================================================
+TEST 4: Drone Selector
+  Budget category:   Premium >5L
+  RAG sources used:  5
+  RAG LIVE: YES
+  CITATIONS:
+    - drone_models.csv (row 2), record_id: D002
+    - drone_models.csv (row 9), record_id: D009
+    - drone_models.csv (row 1), record_id: D001
+    - drone_models.csv (row 14), record_id: D014
+    - drone_models.csv (row 6), record_id: D006
+  Top recommendations:
+    1. Drone model: Agri-Hawk 16L by IdeaForge (India). Category: Agriculture. Weight: 12.5kg. Max payload: 16.0kg. Battery: 22...
+    2. Drone model: Kisan Drone by Garuda Aerospace (India). Category: Agriculture. Weight: 8.0kg. Max payload: 5.0kg. Battery:...
+============================================================
+
+============================================================
+FINAL SUMMARY
+  Pinecone vectors:   224
+  Test 1 Flight Time: PASS
+  Test 2 ROI:         PASS
+  Test 3 Compliance:  PASS
+  Test 4 Drone Select:PASS
+  Citations working:  YES
+============================================================

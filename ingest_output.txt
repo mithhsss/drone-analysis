@@ -1,0 +1,66 @@
+﻿python : Traceback (most 
+recent call last):
+At line:1 char:1
++ python rag/ingest.py 
+2>&1 | Out-File -Encoding 
+utf8 ingest_output.txt
++ 
+~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpeci    fied: 
+(Traceback     (most 
+recent call     
+last)::String) [    ], 
+RemoteExceptio    n
+    + FullyQualifiedE    
+rrorId : NativeCo    
+mmandError
+ 
+  File "C:\Users\Mithul\De
+sktop\drone-intelligence\r
+ag\ingest.py", line 23, 
+in <module>
+    from 
+langchain_pinecone import 
+PineconeVectorStore
+  File "C:\Users\Mithul\Ap
+pData\Local\Programs\Pytho
+n\Python312\Lib\site-packa
+ges\langchain_pinecone\__i
+nit__.py", line 1, in 
+<module>
+    from langchain_pinecon
+e.embeddings import 
+PineconeEmbeddings, 
+PineconeSparseEmbeddings
+  File "C:\Users\Mithul\Ap
+pData\Local\Programs\Pytho
+n\Python312\Lib\site-packa
+ges\langchain_pinecone\emb
+eddings.py", line 6, in 
+<module>
+    from pinecone import 
+Pinecone as 
+PineconeClient  # type: 
+ignore[import-untyped]
+    ^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Mithul\Ap
+pData\Local\Programs\Pytho
+n\Python312\Lib\site-packa
+ges\pinecone\__init__.py",
+ line 5, in <module>
+    raise Exception(
+Exception: The official 
+Pinecone python package 
+has been renamed from 
+`pinecone-client` to 
+`pinecone`. Please remove 
+`pinecone-client` from 
+your project dependencies 
+and add `pinecone` 
+instead. See the README 
+at https://github.com/pine
+cone-io/pinecone-python-cl
+ient for more information 
+on using the python SDK.

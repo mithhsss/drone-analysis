@@ -1,0 +1,11 @@
+institute_id,institute_name,city,state,dgca_approved,courses_offered,duration_days,fee_inr,facilities
+TI001,Drone Destination,New Delhi,Delhi,Yes,"Remote Pilot Training, Agriculture Drone Training, Advanced Flight Operations",30,85000,"Indoor flight simulator, 2 outdoor fields, 10+ drone fleet"
+TI002,FlytBase Academy,Pune,Maharashtra,Yes,"Remote Pilot Certificate, Commercial Pilot Training, Software Integration",21,65000,"3 outdoor fields, DJI fleet, coding lab"
+TI003,IGRUA Drone Wing,Amethi,Uttar Pradesh,Yes,"RPL Training, Drone Maintenance, Advanced Navigation",25,55000,"Government facility, restricted airspace access"
+TI004,Garuda Aerospace Academy,Chennai,Tamil Nadu,Yes,"Agriculture Drone Pilot, RPL, Drone Assembly and Repair",15,45000,"Assembly workshop, 5-acre test field"
+TI005,IIT Kanpur Drone Lab,Kanpur,Uttar Pradesh,Yes,"Advanced Autonomous Systems, Research Pilot Training, Computer Vision for Drones",60,120000,"Research lab, wind tunnel, GPS-denied testing"
+TI006,Skylark Training Centre,Bangalore,Karnataka,Yes,"RPL, Mapping and Survey Operations, LiDAR Training",20,70000,"Urban and rural test sites, LiDAR equipment"
+TI007,NRSC Drone Training,Hyderabad,Telangana,Yes,"Remote Sensing with Drones, GIS Integration, Survey Operations",14,35000,"ISRO facility, satellite data integration"
+TI008,Redbird Flight Training,Baramati,Maharashtra,Yes,"RPL, Night Operations, Beyond Visual Line of Sight",28,75000,"Night flying facility, BVLOS corridor"
+TI009,EduRade Drone Academy,Ahmedabad,Gujarat,Yes,"Basic RPL, Photography and Videography with Drones",10,30000,"Indoor arena, editing suite"
+TI010,Drone Shala,Indore,Madhya Pradesh,Yes,"RPL Training, Precision Agriculture, Delivery Operations",18,50000,"5 drone fleet, agriculture test plots"

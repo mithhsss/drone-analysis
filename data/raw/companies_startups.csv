@@ -1,0 +1,11 @@
+company_id,company_name,founded_year,headquarters,type,focus_area,funding_raised_cr,employees,key_product,notable_clients
+C001,IdeaForge,2007,Mumbai,Private,Defence and Enterprise UAVs,280,400+,SWITCH 1.0 VTOL,"Indian Army, Navy, BSF, CRPF"
+C002,Garuda Aerospace,2015,Chennai,Private,Agriculture and Enterprise,250,500+,Kisan Drone,"Tata, L&T, NTPC"
+C003,Throttle Aerospace,2016,Bangalore,Private,Urban Air Mobility and Survey,45,80+,Skylark Lite,"Karnataka Govt, ISRO"
+C004,Skylark Drones,2014,Bangalore,Private,Data Analytics and Mapping,22,100+,Skylark Platform,"Adani, Tata Steel, Coal India"
+C005,Aarav Unmanned Systems,2013,Bangalore,Private,Agriculture and Survey,15,60+,Aarav X5 Agri Drone,"FMC, Syngenta, UPL"
+C006,TSAW Drones,2019,Delhi,Startup,Medical Delivery Drones,8,30+,TSAW Vahan,"AIIMS, Apollo"
+C007,Dhaksha Unmanned Systems,2018,Chennai,Private,Defence Drones,35,70+,Counter-drone system,"Indian Defence Ministry"
+C008,Asteria Aerospace (Jio),2011,Bangalore,Acquired by Jio,Enterprise and Defence,50,120+,A200 drone platform,"Jio, Reliance"
+C009,ePlane Company,2017,Chennai (IIT-M),Startup,Air Taxi and Cargo UAV,12,40+,E200 Cargo drone,"IIT Madras, Govt of TN"
+C010,Detect Technologies,2016,Chennai (IIT-M),Private,Industrial Inspection,60,200+,AI-powered inspection drones,"ONGC, IOCL, BPCL"

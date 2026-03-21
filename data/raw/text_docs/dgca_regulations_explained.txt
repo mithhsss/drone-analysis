@@ -1,0 +1,53 @@
+DGCA DRONE REGULATIONS IN INDIA — COMPREHENSIVE GUIDE
+
+OVERVIEW OF INDIAN DRONE POLICY
+
+India's drone regulations are governed by the Directorate General of Civil Aviation (DGCA) under the Ministry of Civil Aviation. The Drone Rules 2021 replaced the earlier UAS Rules and established a more liberalized framework to promote the drone industry while ensuring safety and security. The DigitalSky Platform serves as the single-window system for all drone-related permissions and registrations.
+
+The Indian government has set a target to make India a global drone hub by 2030, with estimated industry size of INR 15,000 crore. The Production-Linked Incentive (PLI) scheme provides up to 20% incentive for drone and component manufacturing in India.
+
+DRONE WEIGHT CATEGORIES
+
+The DGCA classifies drones into five weight categories, each with different regulatory requirements:
+
+NANO DRONES (up to 250 grams): These are the lightest category and face minimal regulation. No registration is required. No Remote Pilot Licence is needed. Can be flown in uncontrolled airspace below 50 feet. Perfect for recreational use and indoor applications. Examples include DJI Mini series (249g). Despite minimal regulation, operators must still follow basic safety guidelines and not fly over crowds or near airports.
+
+MICRO DRONES (250 grams to 2 kilograms): Registration on DigitalSky is mandatory. No Remote Pilot Licence required for recreational use. For commercial operations, RPL is required. Can operate in green zones without prior permission. Must maintain Visual Line of Sight (VLOS). Insurance is mandatory. Examples include DJI Phantom 4 RTK and many survey drones.
+
+SMALL DRONES (2 to 25 kilograms): Full DGCA registration required with Unique Identification Number (UIN). Remote Pilot Licence is mandatory. Must operate with approved flight plan. Insurance mandatory. Most commercial and agricultural drones fall in this category. Examples include IdeaForge Agri-Hawk, DJI Agras series. This is the most common category for professional operations in India.
+
+MEDIUM DRONES (25 to 150 kilograms): All requirements of Small category apply. Additionally requires Type Certificate and special operational approval. Used for heavy cargo, specialized military applications. Limited commercial deployments due to stringent requirements. Examples include heavy-lift cargo drones and military UAVs.
+
+LARGE DRONES (above 150 kilograms): Requires comprehensive certification similar to manned aircraft. Special approval from DGCA for each operation. Very limited operations in India. Primarily military and large cargo applications. Subject to the most stringent safety and airworthiness requirements.
+
+AIRSPACE ZONES
+
+India uses a color-coded airspace system for drone operations:
+
+GREEN ZONES: Areas where drone operations are permitted with minimal restrictions. Below 400 feet AGL. Not within 8-12 km of airports (depending on airport category). Not in restricted or prohibited areas. Nano and Micro drones can operate without prior permission. Small drones need registered flight plan but no real-time ATC clearance. Interactive airspace map available on DigitalSky platform.
+
+YELLOW ZONES: These are controlled airspace areas requiring ATC permission. Within 12 km of operational airports. Near helipads and temporary restricted areas. Requires flight plan submission and approval via DigitalSky. Allow at least 24 hours for approval. ATC communication equipment recommended. Higher scrutiny of flight parameters and pilot credentials.
+
+RED ZONES — NO FLY AREAS: Absolutely prohibited for any drone operations. Within 25 km of international borders. Around strategic military installations. Near nuclear facilities and power plants. Within 5 km of important government buildings (Rashtrapati Bhavan, Parliament). Over Eco-sensitive zones notified by MoEF&CC. Permanent prohibited areas around major airports' runway approach/departure paths. Violation of red zone restrictions is a criminal offense with penalties up to INR 5 lakh and imprisonment.
+
+REMOTE PILOT LICENCE
+
+The Remote Pilot Licence (RPL) is the equivalent of a pilot licence for drone operators. Here are the detailed requirements:
+
+ELIGIBILITY: Must be at least 18 years of age (10 years for Nano category recreational use). Indian citizen or Overseas Citizen of India. Must pass background security check. Must have completed 10th standard or equivalent. Medical fitness certificate from authorized aviation medical examiner.
+
+TRAINING REQUIREMENTS: Must complete training from a DGCA-approved Remote Pilot Training Organisation (RPTO). Training duration varies: 5 days minimum for basic RPL. Theory subjects include: air regulations, meteorology, air navigation, drone technology, emergency procedures. Practical training includes: pre-flight checks, takeoff and landing, hover and orientation, navigation exercises, emergency procedures, night operations (if endorsed). Must log minimum 10 hours supervised flight time.
+
+EXAMINATION: Written exam conducted by DGCA. 100 multiple choice questions. Must score at least 60% to pass. Coverage: Indian drone regulations and procedures, airspace classification and restrictions, meteorological conditions affecting drone operations, basic aerodynamics and drone systems, emergency and safety procedures.
+
+COMMERCIAL OPERATIONS IN INDIA
+
+Commercial drone operations are a rapidly growing sector in India. Key requirements include:
+
+PERMITS AND APPROVALS: Remote Pilot Licence (mandatory). DGCA Registration with UIN. Commercial Operating Permit from DGCA. Flight plan approval for each operation via DigitalSky. Third-party liability insurance.
+
+POPULAR COMMERCIAL APPLICATIONS: Agriculture — crop spraying and monitoring, this is the largest commercial segment. Survey and mapping — land records, construction, mining. Inspection — power lines, pipeline, wind turbines, cell towers. Photography and videography — weddings, real estate, films. Delivery — medical supplies, e-commerce (still in pilot phase). Security and surveillance — industrial premises, events.
+
+INSURANCE REQUIREMENTS
+
+All drones except Nano category must have third-party liability insurance. This covers: damage to persons or property on the ground, collision with other aircraft, and damage to third-party property. Annual premium typically ranges from INR 5,000 to INR 25,000 depending on drone category and use case. Some insurance providers offering specialized drone insurance in India include ICICI Lombard, HDFC ERGO, and specialized aviation insurance agencies.

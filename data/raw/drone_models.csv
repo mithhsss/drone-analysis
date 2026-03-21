@@ -1,0 +1,16 @@
+drone_id,model_name,manufacturer,manufacturer_country,category,weight_kg,max_payload_kg,battery_mah,max_flight_time_min,max_range_km,max_speed_kmh,price_inr,price_usd,dgca_category,made_in_india,use_cases,camera_resolution,obstacle_avoidance,ip_rating
+D001,Agri-Hawk 10L,IdeaForge,India,Agriculture,9.8,10.0,17500,25,5.0,45,450000,5400,Small,Yes,"Agriculture spraying, Crop monitoring",None,Yes,IP67
+D002,Agri-Hawk 16L,IdeaForge,India,Agriculture,12.5,16.0,22000,20,4.0,40,650000,7800,Small,Yes,"Agriculture spraying, Large farm coverage",None,Yes,IP67
+D003,Ninja UAV,IdeaForge,India,Surveillance,3.2,0.5,6000,30,10.0,65,350000,4200,Small,Yes,"Surveillance, Border patrol, Search and rescue","1080p HD",Yes,IP54
+D004,Switch 1.0,IdeaForge,India,Hybrid VTOL,6.5,1.0,12000,90,60.0,80,1200000,14400,Small,Yes,"Mapping, Survey, Long range inspection","20MP",Yes,IP54
+D005,Mavic 3 Enterprise,DJI,China,Enterprise,920,0.0,5000,45,15.0,75,250000,3000,Micro,No,"Inspection, Photography, Mapping","20MP 4/3 CMOS",Yes,IP54
+D006,Agras T30,DJI,China,Agriculture,26.4,30.0,29000,15,7.0,35,850000,10200,Medium,No,"Agriculture spraying, Orchard management",None,Yes,IP67
+D007,M300 RTK,DJI,China,Enterprise,6.3,2.7,17500,55,15.0,82,950000,11400,Small,No,"Mapping, Inspection, Emergency response","Dual camera system",Yes,IP45
+D008,Phantom 4 RTK,DJI,China,Survey,1.4,0.0,5870,30,7.0,72,180000,2160,Micro,No,"Survey, Mapping, GIS","20MP 1-inch CMOS",No,None
+D009,Kisan Drone,Garuda Aerospace,India,Agriculture,8.0,5.0,12000,15,3.0,30,250000,3000,Small,Yes,"Agriculture spraying, Fertilizer spreading",None,No,IP55
+D010,TSAW Vahan,TSAW Drones,India,Delivery,15.0,5.0,20000,30,20.0,60,800000,9600,Small,Yes,"Delivery, Medical supply, Emergency logistics",None,Yes,IP43
+D011,Dhaksha Unmanned,Dhaksha,India,Defence,25.0,5.0,30000,60,50.0,120,2500000,30000,Small,Yes,"Military, Border surveillance, Anti-drone","Thermal + EO",Yes,IP67
+D012,Skylark Lite,Throttle Aerospace,India,Survey,2.0,0.3,5500,35,8.0,55,180000,2160,Micro,Yes,"Urban survey, Mapping, Inspection","12MP",No,IP43
+D013,Mini 3 Pro,DJI,China,Consumer,0.249,0.0,3850,34,12.0,57,75000,900,Nano,No,"Photography, Videography, Recreation","48MP",Yes,None
+D014,Aarav X5,Aarav Unmanned,India,Agriculture,4.5,5.0,10000,18,4.0,35,320000,3840,Small,Yes,"Agriculture spraying, Precision agriculture",None,No,IP55
+D015,ePlane E200,ePlane,India,Cargo UAV,45.0,20.0,50000,45,30.0,90,3000000,36000,Medium,Yes,"Heavy cargo, Medical supply, Disaster relief",None,Yes,IP55
