@@ -14,4 +14,24 @@ A modular system for drone intelligence, featuring RAG-based analysis, MCP tools
 
 ## Getting Started
 
-[To be added...]
+1. **Clone the repository and install backend dependencies:**
+   Ensure you have Python installed, then install the required Python packages:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Start the FastAPI Backend:**
+   In the root directory of the project, run the `uvicorn` live-reload server:
+   ```bash
+   uvicorn api.main:app --reload --port 8000
+   ```
+   The API will now be successfully running on `http://localhost:8000`.
+
+3. **Start the Frontend UI:**
+   Open a new terminal session, navigate to the `frontend/` folder, and launch the Vite development server:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+   Your user interface will now be actively accessible via `http://localhost:3000`.

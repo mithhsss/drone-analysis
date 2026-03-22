@@ -26,7 +26,7 @@ def retrieve_knowledge_base(query: str, top_k: int = 5) -> dict:
         "citations": format_citations(chunks)
     }
 
-async def execute_agent(message: str) -> dict:
+async def execute_agent(message: str, conversation_history: list = None) -> dict:
     """
     The main agent loop capable of executing functions returning the response.
     """
@@ -52,6 +52,7 @@ async def execute_agent(message: str) -> dict:
     
     system_instruction = (
         "You are the central Drone Intelligence routing agent. Your job is to answer user queries accurately. "
+        "Answer in under 100 words clearly and concisely. "
         "You CAN make use of your tools to gather facts or calculate answers when you need concrete data. "
         "DO NOT use tools for casual greetings or if you don't need them. "
         "If you are asked a factual question, YOU MUST ONLY use the data returned by your tools to answer. Do not use your internal general knowledge. "
@@ -68,7 +69,11 @@ async def execute_agent(message: str) -> dict:
         system_instruction=system_instruction
     )
 
-    chat = local_agent_model.start_chat(enable_automatic_function_calling=True)
+    chat = local_agent_model.start_chat(
+        enable_automatic_function_calling=True,
+        history=conversation_history
+    )
+    
     response = await chat.send_message_async(message)
     
     citations = list(set(local_citations))
