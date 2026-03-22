@@ -21,6 +21,7 @@ async def flight_time(request: FlightTimeRequest):
         result = calculate_flight_time(**request.model_dump())
         ms = round((time.time() - start) * 1000, 2)
         analytics.track("/calculate/flight-time", f"flight {request.drone_weight_kg}kg", ms)
+        result.pop("rag_context", None)
         return ToolResponse(
             success=True, tool_used="flight_time_calculator",
             citations=result.pop("citations", []),
@@ -38,6 +39,8 @@ async def roi(request: ROIRequest):
         result = calculate_roi(**request.model_dump())
         ms = round((time.time() - start) * 1000, 2)
         analytics.track("/calculate/roi", f"roi {request.use_case}", ms)
+        result.pop("rag_insights", None)
+        result.pop("sources", None)
         return ToolResponse(
             success=True, tool_used="roi_calculator",
             citations=result.pop("citations", []),

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { Send, User, Bot, Loader2, BookOpen, ExternalLink } from 'lucide-react'
 
 interface Message {
@@ -140,7 +141,21 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ activeTab, activeChatId, 
                     ? 'bg-primary-600 text-white rounded-tr-none' 
                     : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 text-slate-800 dark:text-slate-200 rounded-tl-none'
                 }`}>
-                  {m.content}
+                  <ReactMarkdown 
+                    components={{
+                      p: ({node, ...props}) => <p className="mb-2 last:mb-0" {...props} />,
+                      ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-2 space-y-1" {...props} />,
+                      ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2 space-y-1" {...props} />,
+                      li: ({node, ...props}) => <li className="" {...props} />,
+                      h1: ({node, ...props}) => <h1 className="text-xl font-bold mb-2 mt-4 first:mt-0" {...props} />,
+                      h2: ({node, ...props}) => <h2 className="text-lg font-bold mb-2 mt-4 first:mt-0" {...props} />,
+                      h3: ({node, ...props}) => <h3 className="text-md font-bold mb-2 mt-3 first:mt-0" {...props} />,
+                      strong: ({node, ...props}) => <strong className="font-semibold" {...props} />,
+                      a: ({node, ...props}) => <a className="underline underline-offset-2 hover:opacity-80 transition-opacity" target="_blank" rel="noopener noreferrer" {...props} />
+                    }}
+                  >
+                    {m.content}
+                  </ReactMarkdown>
                 </div>
                 
                 {m.sources && (

@@ -20,6 +20,7 @@ async def compliance(request: ComplianceRequest):
         result = check_compliance(**request.model_dump())
         ms = round((time.time() - start) * 1000, 2)
         analytics.track("/check/compliance", f"compliance {request.drone_weight_kg}kg {request.use_type}", ms)
+        result.pop("dgca_rules_retrieved", None)
         return ToolResponse(
             success=True, tool_used="compliance_checker",
             citations=result.pop("citations", []),

@@ -28,7 +28,7 @@ async def handle_chat(message: str, conversation_id: str = None) -> dict:
         try:
             # Auto-generate succinct title via LLM
             title_prompt = f"Summarize this user query into a concise 3-5 word title. Do not wrap in quotes or explain. Query: {message}"
-            title_model = genai.GenerativeModel("models/gemini-2.5-flash")
+            title_model = genai.GenerativeModel("models/gemini-3-flash-preview")
             title_resp = await title_model.generate_content_async(title_prompt)
             title = title_resp.text.strip().replace('"', '')
         except Exception:
@@ -39,7 +39,7 @@ async def handle_chat(message: str, conversation_id: str = None) -> dict:
 
     # Get conversation history from SQLite for State Memory using 'model'/'user' mapping
     try:
-        history = get_recent_history(conversation_id, limit=6) # Store 3 turns
+        history = get_recent_history(conversation_id, limit=16) # Store 8 turns
     except Exception:
         history = []
 
@@ -50,10 +50,13 @@ async def handle_chat(message: str, conversation_id: str = None) -> dict:
         tool_used = agent_result["tool_used"]
         processing_time_ms = agent_result["processing_time_ms"]
         
-        # Word Limit Safeguard (< 100 words)
-        words = answer.split()
-        if len(words) >= 100:
-            answer = " ".join(words[:99]) + "..."
+
+            
+        import json
+        source_data = json.dumps({
+            "tool": tool_used,
+            "citations": citations
+        })
             
         # Store securely to persistent memory DB
         # User message
@@ -72,8 +75,8 @@ async def handle_chat(message: str, conversation_id: str = None) -> dict:
             chat_id=conversation_id,
             role="model",  # the generative AI expected role
             content=answer,
-            model_used="gemini-2.5-flash",
-            source=tool_used
+            model_used="gemini-3-flash-preview",
+            source=source_data
         )
         
     except Exception as e:

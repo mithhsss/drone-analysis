@@ -21,30 +21,48 @@ def select_drone(
     citations: list[str] = []
     rag_sources_used = 0
 
+    import os
+    import csv
+
+    # Parse structural CSV dataset explicitly
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    csv_path = os.path.join(base_dir, "data", "structured", "drone_models.csv")
+
     try:
-        chunks1 = query_pinecone_filtered(
-            f"drone models India {use_case} specifications price payload",
-            category="drone_specs", top_k=4,
-        )
-        chunks2 = query_pinecone_filtered(
-            f"best drone {use_case} budget INR {budget_inr} payload {payload_required_kg}kg",
-            category="drone_specs", top_k=4,
-        )
+        with open(csv_path, mode="r", encoding="utf-8") as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                try:
+                    price = float(row.get("price_inr", 0) or 0)
+                    payload = float(row.get("max_payload_kg", 0) or 0)
+                    flight_time = float(row.get("max_flight_time_min", 0) or 0)
+                    obs_avoidance = str(row.get("obstacle_avoidance", "No")).strip() == "Yes"
+                    cases = str(row.get("use_cases", "")).lower()
 
-        # Deduplicate by first 60 chars
-        seen: set[str] = set()
-        deduped = []
-        for c in chunks1 + chunks2:
-            prefix = c["text"][:60]
-            if prefix not in seen:
-                seen.add(prefix)
-                deduped.append(c)
-
-        rag_sources_used = len(deduped)
-        recommendations = [c["text"] for c in deduped[:5]]
-        citations = format_citations(deduped)
-    except Exception:
-        recommendations = ["RAG system unavailable. Please ensure Pinecone is running."]
+                    # Filtering constraints
+                    if price > budget_inr:
+                        continue
+                    if payload < payload_required_kg:
+                        continue
+                    if flight_time < flight_time_required_min:
+                        continue
+                    if indoor_use and not obs_avoidance:
+                        continue
+                    if use_case.lower() not in cases:
+                        continue
+                    
+                    # Target Matched!
+                    rec_str = f"{row.get('model_name')} by {row.get('manufacturer')} (₹{price:,.0f}) | Payload: {payload}kg | {flight_time}min flight | Category: {row.get('dgca_category')}"
+                    recommendations.append(rec_str)
+                    citations.append(f"drone_models.csv (Model: {row.get('model_name')})")
+                except ValueError:
+                    continue  # Skip unparseable malformed rows securely
+        rag_sources_used = len(recommendations)
+    except Exception as e:
+        recommendations = [f"Structural DB unavailable: {e}"]
+        
+    if not recommendations:
+        recommendations = ["No drones precisely match all criteria. Consider expanding your budget or lowering payload minimums."]
 
     if budget_inr < 100000:
         budget_category = "Budget <1L"

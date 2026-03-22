@@ -74,13 +74,13 @@ def get_chat_history_full(chat_id: str) -> list[dict]:
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute('''
-        SELECT role, content FROM messages
+        SELECT role, content, source FROM messages
         WHERE chat_id = ?
         ORDER BY timestamp ASC
     ''', (chat_id,))
     rows = cursor.fetchall()
     conn.close()
-    return [{"role": row[0], "content": row[1]} for row in rows]
+    return [{"role": row[0], "content": row[1], "source": row[2] if len(row) > 2 else "{}"} for row in rows]
 
 def get_recent_history(chat_id: str, limit: int = 10) -> list:
     """Returns history formatted perfectly for the google.generativeai SDK."""

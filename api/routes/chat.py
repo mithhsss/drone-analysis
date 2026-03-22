@@ -43,14 +43,25 @@ async def get_chat(chat_id: str):
     """Returns the full conversation payload for a specific chat ID."""
     from api.services.db_service import get_chat_history_full
     messages = get_chat_history_full(chat_id)
-    
-    # Map back to the UI interface format if strictly required, but usually 
-    # {role, content} is the perfect structure.
-    # The frontend is expecting "user" and "assistant" roles typically, while genai uses `model`. We'll format it gracefully:
+    # mapped gracefully
     formatted_messages = []
+    
+    import json
+    from api.services.chat_service import _citations_to_sources
+    
     for msg in messages:
+        cit_array = []
+        try:
+            raw_source = msg.get("source", "{}")
+            source_data = json.loads(raw_source)
+            if isinstance(source_data, dict) and "citations" in source_data:
+                cit_array = source_data["citations"]
+        except Exception:
+            pass
+            
         formatted_messages.append({
             "role": "assistant" if msg["role"] == "model" else msg["role"],
-            "content": msg["content"]
+            "content": msg["content"],
+            "sources": _citations_to_sources(cit_array) if cit_array else []
         })
     return {"chat_id": chat_id, "messages": formatted_messages}
