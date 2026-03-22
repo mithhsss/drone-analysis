@@ -14,7 +14,7 @@ from mcp_server.rag_bridge import query_pinecone, format_citations
 # Ensure Gemini is configured
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-def retrieve_knowledge_base(query: str, top_k: int = 15) -> dict:
+def retrieve_knowledge_base(query: str, top_k: int = 10) -> dict:
     """
     Searches the Pinecone Drone Intelligence vector database for relevant documentation.
     Use this tool whenever the user asks a general knowledge question about drones, rules, markets, or operations.
@@ -93,15 +93,10 @@ async def execute_agent(message: str, conversation_history: list = None) -> dict
                         for c in resp_dict["citations"]:
                             raw_citations.append(str(c))
                             
-    # Filter the 15 raw citations down to only the ones actually quoted by Gemini in the text!
-    citations = []
+    # The user requested giving ALL chunks to the UI citations natively, 
+    # instead of strictly filtering them by LLM quoting bounds.
+    citations = list(set(raw_citations))
     answer_text = response.text
-    for c in set(raw_citations):
-        # Gemini often drops the ', record_id:' part to be theoretically concise. 
-        # Match only the fundamental title/row text mathematically.
-        base_c = c.split(", record_id:")[0].strip()
-        if base_c in answer_text:
-            citations.append(c)
             
     # Scrub the raw physical brackets from the final answer text 
     # to avoid polluting the chat UI (since we render citation cards anyway).

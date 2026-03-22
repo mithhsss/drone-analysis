@@ -99,6 +99,13 @@ def get_recent_history(chat_id: str, limit: int = 10) -> list:
     
     history = []
     for role, content in recent_rows:
+        # Optimize 'state remembrance' by summarizing lengthy historical model outputs
+        # down to their core mathematical prefix sentences so Gemini doesn't get distracted by its own whole texts.
+        if role == "model" and len(content.split()) > 40:
+            sentences = [s.strip() for s in content.split(".") if s.strip()]
+            if len(sentences) > 2:
+                content = ". ".join(sentences[:2]) + ". (Summarized Context)"
+                
         # generative ai uses "user" and "model"
         history.append({"role": role, "parts": [content]})
     return history
