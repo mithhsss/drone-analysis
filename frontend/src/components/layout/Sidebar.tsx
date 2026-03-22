@@ -1,4 +1,5 @@
 import React from 'react'
+import { ChatMeta } from '../../App'
 import { 
   MessageSquare, 
   Zap, 
@@ -7,7 +8,8 @@ import {
   Award, 
   BarChart3, 
   ChevronLeft, 
-  ChevronRight 
+  ChevronRight,
+  Plus
 } from 'lucide-react'
 
 interface SidebarProps {
@@ -15,6 +17,10 @@ interface SidebarProps {
   setActiveTab: (tab: string) => void
   isOpen: boolean
   setIsOpen: (isOpen: boolean) => void
+  chats: ChatMeta[]
+  activeChatId: string | null
+  setActiveChatId: (id: string | null) => void
+  fetchChats: () => void
 }
 
 const menuItems = [
@@ -26,7 +32,7 @@ const menuItems = [
   { id: 'analytics', label: 'Analytics', icon: BarChart3 },
 ]
 
-const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, setIsOpen }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, setIsOpen, chats, activeChatId, setActiveChatId, fetchChats }) => {
   return (
     <aside 
       className={`
@@ -66,11 +72,34 @@ const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, isOpen, setI
 
       <div className="p-4 border-t border-slate-100 dark:border-slate-800">
         <div className={`mb-4 px-2 transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 md:hidden'}`}>
-          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Recent Chats</h4>
+          <div className="flex justify-between items-center mb-2">
+            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Recent Chats</h4>
+            <button 
+              onClick={() => { setActiveTab('chat'); setActiveChatId(null); }}
+              className="text-[10px] bg-primary-100 text-primary-700 hover:bg-primary-200 dark:bg-primary-900/50 dark:text-primary-300 dark:hover:bg-primary-900 px-2 py-1 flex items-center gap-1 rounded-md transition-colors font-semibold shadow-sm"
+              title="End chat and start a new one"
+            >
+              <Plus className="w-3 h-3" /> New
+            </button>
+          </div>
+          
           <div className="space-y-1">
-            {['Regulatory Query #1', 'Flight ROI Analysis', 'Compliance NCR'].map((chat, i) => (
-              <button key={i} className="w-full text-left p-2 text-xs text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/10 rounded-lg transition-all truncate">
-                {chat}
+            {chats.length === 0 && (
+              <p className="text-xs text-slate-400 italic">No recent chats</p>
+            )}
+            {chats.map((chat) => (
+              <button 
+                key={chat.chat_id}
+                onClick={() => { setActiveTab('chat'); setActiveChatId(chat.chat_id); }}
+                className={`w-full text-left flex items-center gap-2 p-2 text-xs rounded-lg transition-all truncate
+                  ${activeChatId === chat.chat_id 
+                    ? 'text-primary-700 bg-primary-50 dark:text-primary-400 dark:bg-primary-900/20 font-semibold' 
+                    : 'text-slate-500 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/10'
+                  }`}
+                title={chat.title}
+              >
+                <MessageSquare className="w-3 h-3 shrink-0 opacity-50" />
+                <span className="truncate">{chat.title}</span>
               </button>
             ))}
           </div>

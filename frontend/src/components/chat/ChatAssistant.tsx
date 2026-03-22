@@ -11,17 +11,20 @@ interface Message {
 
 interface ChatAssistantProps {
   activeTab: string
+  activeChatId: string | null
+  setActiveChatId: (id: string | null) => void
+  fetchChats: () => void
 }
 
-const ChatAssistant: React.FC<ChatAssistantProps> = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: 'Hello! I am your Indian Drone Intelligence Assistant. How can I help you today? You can ask about drone regulations, technical specs, or business ROI.',
-      timestamp: new Date()
-    }
-  ])
+const WELCOME_MESSAGE: Message = {
+  id: '1',
+  role: 'assistant',
+  content: 'Hello! I am your Indian Drone Intelligence Assistant. How can I help you today? You can ask about drone regulations, technical specs, or business ROI.',
+  timestamp: new Date()
+}
+
+const ChatAssistant: React.FC<ChatAssistantProps> = ({ activeTab, activeChatId, setActiveChatId, fetchChats }) => {
+  const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -31,6 +34,41 @@ const ChatAssistant: React.FC<ChatAssistantProps> = () => {
   }
 
   useEffect(scrollToBottom, [messages, isLoading])
+
+  // React to sidebar clicks correctly by loading historical context fully 
+  useEffect(() => {
+    if (!activeChatId) {
+      // Clear bounds back into new baseline layout natively
+      setMessages([WELCOME_MESSAGE]);
+      return;
+    }
+
+    const loadHistory = async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetch(`http://localhost:8000/api/chats/${activeChatId}`);
+        if (res.ok) {
+          const data = await res.json();
+          // Transform history arrays efficiently 
+          if (data.messages && data.messages.length > 0) {
+            const mappedHistory: Message[] = data.messages.map((m: any, i: number) => ({
+               id: `history-${i}`,
+               role: m.role === 'model' ? 'assistant' : m.role,
+               content: m.content,
+               timestamp: new Date()
+            }));
+            setMessages(mappedHistory);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load historical interactions:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadHistory();
+  }, [activeChatId])
 
   const handleSend = async () => {
     if (!input.trim()) return
@@ -51,7 +89,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = () => {
       const response = await fetch('http://localhost:8000/api/chat/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: input })
+        body: JSON.stringify({ message: input, conversation_id: activeChatId })
       });
 
       if (!response.ok) throw new Error('API request failed');
@@ -66,6 +104,13 @@ const ChatAssistant: React.FC<ChatAssistantProps> = () => {
         timestamp: new Date()
       }
       setMessages(prev => [...prev, assistantMsg])
+      
+      // Complete initialization mapping directly handling sidebar names
+      if (!activeChatId && data.conversation_id) {
+          setActiveChatId(data.conversation_id);
+          // Kick sidebar global loop locally to append auto-generation tags
+          fetchChats();
+      }
     } catch (error) {
        console.error("Chat API Error:", error);
        setMessages(prev => [...prev, {
