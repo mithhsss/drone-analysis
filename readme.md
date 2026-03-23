@@ -113,5 +113,3 @@ View live system performance, popular queries, and vector database health.
 - `scripts/`: Utility scripts for maintenance and testing.
 
 ---
-
-*Verified for India DGCA DigitalSky Guidelines Level 2.1.*
