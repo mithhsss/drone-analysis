@@ -14,6 +14,9 @@ The project follows a modular, decoupled architecture:
 - **Vector DB (Pinecone)**: Stores high-dimensional embeddings of DGCA regulations, training institute lists, and industry reports for semantic retrieval.
 - **MCP Server (Model Context Protocol)**: Implements specialized tools (Flight Time, ROI, Compliance, etc.) as modular extensions.
 
+<img width="930" height="675" alt="image" src="https://github.com/user-attachments/assets/e7bed2e8-c05d-4467-b0a6-52934c7b4103" />
+
+
 ---
 
 ##  Tech Stack
