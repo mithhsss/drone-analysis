@@ -5,6 +5,7 @@ Wraps the Pinecone + Google GenAI setup from rag/ without rewriting any RAG logi
 
 import os
 import logging
+import cohere
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -13,12 +14,13 @@ logger = logging.getLogger("rag_bridge")
 # Lazy-initialized globals
 _pc = None
 _index = None
+_co = None
 _genai_configured = False
 
 
 def _ensure_initialized():
-    """Lazily initialize Pinecone and GenAI clients."""
-    global _pc, _index, _genai_configured
+    """Lazily initialize Pinecone, GenAI, and Cohere clients."""
+    global _pc, _index, _co, _genai_configured
     if _index is not None:
         return
 
@@ -27,6 +29,8 @@ def _ensure_initialized():
 
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
     google_api_key = os.getenv("GOOGLE_API_KEY")
+    cohere_api_key = os.getenv("COHERE_API_KEY")
+
     if not pinecone_api_key or not google_api_key:
         raise RuntimeError("PINECONE_API_KEY or GOOGLE_API_KEY not set in .env")
 
@@ -34,6 +38,9 @@ def _ensure_initialized():
     _genai_configured = True
     _pc = Pinecone(api_key=pinecone_api_key)
     _index = _pc.Index("drone-intelligence1")
+    
+    if cohere_api_key:
+        _co = cohere.Client(api_key=cohere_api_key)
 
 
 def _embed_query(query: str) -> list[float]:
@@ -60,30 +67,76 @@ def _parse_match(match) -> dict:
     }
 
 
-def query_pinecone(query: str, top_k: int = 5) -> list[dict]:
-    """Query Pinecone for relevant chunks. Returns list of dicts with citation fields."""
+def query_pinecone(query: str, top_k: int = 10) -> list[dict]:
+    """Query Pinecone for relevant chunks and re-rank using Cohere if available."""
     try:
         _ensure_initialized()
         embedding = _embed_query(query)
-        matches = _index.query(vector=embedding, top_k=top_k, include_metadata=True)
-        return [_parse_match(m) for m in matches.matches]
+        
+        # Phase 1: Semantic Retrieval (Fetch a larger pool of 50)
+        initial_top_k = 50 if _co else top_k
+        matches = _index.query(vector=embedding, top_k=initial_top_k, include_metadata=True)
+        parsed_matches = [_parse_match(m) for m in matches.matches]
+        
+        if not _co or not parsed_matches:
+            return parsed_matches[:top_k]
+
+        # Phase 2: Reranking (Using Cohere Cross-Encoder)
+        rerank_hits = _co.rerank(
+            query=query,
+            documents=[m["text"] for m in parsed_matches],
+            top_n=top_k,
+            model="rerank-english-v3.0"
+        )
+        
+        reranked_results = []
+        for hit in rerank_hits.results:
+            original_match = parsed_matches[hit.index]
+            original_match["rerank_score"] = round(float(hit.relevance_score), 4)
+            reranked_results.append(original_match)
+            
+        return reranked_results
+
     except Exception as e:
         logger.error(f"query_pinecone failed: {e}")
         return []
 
 
-def query_pinecone_filtered(query: str, category: str, top_k: int = 5) -> list[dict]:
-    """Query Pinecone with category filter. Same return format as query_pinecone."""
+def query_pinecone_filtered(query: str, category: str, top_k: int = 10) -> list[dict]:
+    """Query Pinecone with category filter and re-rank using Cohere if available."""
     try:
         _ensure_initialized()
         embedding = _embed_query(query)
+        
+        # Phase 1: Filtered Semantic Retrieval (Fetch 50)
+        initial_top_k = 50 if _co else top_k
         matches = _index.query(
             vector=embedding,
-            top_k=top_k,
+            top_k=initial_top_k,
             include_metadata=True,
             filter={"category": {"$eq": category}},
         )
-        return [_parse_match(m) for m in matches.matches]
+        parsed_matches = [_parse_match(m) for m in matches.matches]
+
+        if not _co or not parsed_matches:
+            return parsed_matches[:top_k]
+
+        # Phase 2: Reranking
+        rerank_hits = _co.rerank(
+            query=query,
+            documents=[m["text"] for m in parsed_matches],
+            top_n=top_k,
+            model="rerank-english-v3.0"
+        )
+        
+        reranked_results = []
+        for hit in rerank_hits.results:
+            original_match = parsed_matches[hit.index]
+            original_match["rerank_score"] = round(float(hit.relevance_score), 4)
+            reranked_results.append(original_match)
+            
+        return reranked_results
+
     except Exception as e:
         logger.error(f"query_pinecone_filtered failed: {e}")
         return []
