@@ -1,10 +1,10 @@
-# Drone Intelligence System — India 🛸
+# Drone Intelligence System — India 
 
 An AI-powered central hub for drone intelligence, regulatory compliance, and business analytics specifically tailored for the Indian drone ecosystem. This system integrates Retrieval Augmented Generation (RAG) with a suite of specialized calculation tools to provide accurate, cited, and actionable insights.
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 The project follows a modular, decoupled architecture:
 
@@ -16,7 +16,7 @@ The project follows a modular, decoupled architecture:
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Core**: Python 3.10+, TypeScript, React
 - **Web**: FastAPI, Vite, Tailwind CSS, Lucide-React
@@ -26,7 +26,7 @@ The project follows a modular, decoupled architecture:
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### 1. Prerequisites
 - Python installed on your system.
@@ -60,7 +60,7 @@ The dashboard will be available at `http://localhost:5173`.
 
 ---
 
-## 🔌 API Documentation
+##  API Documentation
 
 ### Chat & History
 - `POST /api/chat/`: Send a message to the AI Agent. Includes conversation memory and RAG citations.
@@ -79,24 +79,24 @@ The dashboard will be available at `http://localhost:5173`.
 
 ---
 
-## 🖥️ Dashboard User Guide
+##  Dashboard User Guide
 
-### 💬 Chat Assistant
+###  Chat Assistant
 The central area where you can ask anything about the Indian drone market. The AI automatically retrieves data from the vector database and provides **Source Citation Cards** (e.g., `regulations.csv`) that link directly to the source information.
 
-### 🔋 Flight Time Calculator
+###  Flight Time Calculator
 Located in the right sidebar. Enter your battery capacity (mAh) and weights. It uses a mathematical model to forecast flight efficiency and provides range estimates.
 
-### 💰 ROI Calculator
+###  ROI Calculator
 Calculate when your drone business will break even. Input setup costs, monthly revenue targets, and operational expenses. It produces a multi-year profitability verdict.
 
-### 🛡️ Compliance Checker
+###  Compliance Checker
 Enter mission details to see if you are compliant with Indian laws. It checks if you need a UIN, Remote Pilot Licence, or specific flight approvals.
 
-### 🏆 Drone Recommender
+###  Drone Recommender
 A structured search tool that scans the curated `drone_models.csv` database to find the perfect aircraft within your budget and payload requirements.
 
-### 📈 Global Analytics
+###  Global Analytics
 View live system performance, popular queries, and vector database health.
 
 ---
