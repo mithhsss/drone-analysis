@@ -101,7 +101,7 @@ View live system performance, popular queries, and vector database health.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 - `api/`: FastAPI routes, Pydantic models, and business logic services.
 - `data/`: Structured (CSV) and unstructured data files + SQLite DB.
 - `frontend/`: React source code, components, and styling.
