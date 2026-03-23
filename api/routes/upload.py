@@ -52,7 +52,7 @@ async def upload_file(file: UploadFile = File(...), description: str = Form(None
         )
 
     ms = round((time.time() - start) * 1000, 2)
-    analytics.track("/upload", file.filename, ms)
+    analytics.track("/upload", file.filename, ms, tool_used="Document Ingestion", model_used="none")
 
     return UploadResponse(
         success=True, filename=file.filename,

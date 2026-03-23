@@ -48,14 +48,14 @@ function App() {
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode)
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="h-screen flex flex-col bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Navbar 
         isDarkMode={isDarkMode} 
         toggleDarkMode={toggleDarkMode} 
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
       />
       
-      <div className="flex h-[calc(100vh-64px)] overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar 
           activeTab={activeTab} 
           setActiveTab={setActiveTab} 
@@ -64,14 +64,12 @@ function App() {
           chats={chats}
           activeChatId={activeChatId}
           setActiveChatId={setActiveChatId}
-          fetchChats={fetchChats}
         />
         
         <main className={`flex-1 flex flex-col md:flex-row overflow-hidden transition-all duration-300 ${isSidebarOpen ? 'md:ml-0' : 'ml-0'}`}>
-          <div className="flex-1 overflow-hidden relative overflow-y-auto">
+          <div className="flex-1 overflow-hidden relative flex flex-col min-h-0">
             {activeTab === 'chat' || activeTab === 'flight' || activeTab === 'roi' || activeTab === 'compliance' || activeTab === 'recommend' ? (
               <ChatAssistant 
-                activeTab={activeTab} 
                 activeChatId={activeChatId}
                 setActiveChatId={setActiveChatId}
                 fetchChats={fetchChats}
@@ -88,7 +86,7 @@ function App() {
             )}
           </div>
           
-          <div className="w-full md:w-80 lg:w-96 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/50 overflow-y-auto">
+          <div className="w-full md:w-80 lg:w-96 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/50 flex flex-col">
             <RightPanel activeTab={activeTab} />
           </div>
         </main>

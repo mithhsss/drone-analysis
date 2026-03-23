@@ -28,3 +28,7 @@ data/processed/
 
 # Logs
 *.log
+
+# Analytics
+temp_analytics.json
+seed_analytics*.py

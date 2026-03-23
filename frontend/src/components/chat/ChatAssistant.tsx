@@ -11,7 +11,6 @@ interface Message {
 }
 
 interface ChatAssistantProps {
-  activeTab: string
   activeChatId: string | null
   setActiveChatId: (id: string | null) => void
   fetchChats: () => void
@@ -24,7 +23,7 @@ const WELCOME_MESSAGE: Message = {
   timestamp: new Date()
 }
 
-const ChatAssistant: React.FC<ChatAssistantProps> = ({ activeTab, activeChatId, setActiveChatId, fetchChats }) => {
+const ChatAssistant: React.FC<ChatAssistantProps> = ({ activeChatId, setActiveChatId, fetchChats }) => {
   const [messages, setMessages] = useState<Message[]>([WELCOME_MESSAGE])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -56,6 +55,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ activeTab, activeChatId, 
                id: `history-${i}`,
                role: m.role === 'model' ? 'assistant' : m.role,
                content: m.content,
+               sources: m.sources,
                timestamp: new Date()
             }));
             setMessages(mappedHistory);
@@ -126,7 +126,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ activeTab, activeChatId, 
   }
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-slate-900/50">
+    <div className="flex flex-col flex-1 bg-slate-50 dark:bg-slate-900/50 min-h-0">
       <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
         {messages.map((m) => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -195,7 +195,7 @@ const ChatAssistant: React.FC<ChatAssistantProps> = ({ activeTab, activeChatId, 
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
+      <div className="flex-shrink-0 p-4 border-t border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
         <div className="max-w-4xl mx-auto flex gap-3">
           <div className="flex-1 relative">
             <input

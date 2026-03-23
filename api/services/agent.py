@@ -14,24 +14,49 @@ from mcp_server.rag_bridge import query_pinecone, format_citations
 # Ensure Gemini is configured
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
-def retrieve_knowledge_base(query: str, top_k: int = 10) -> dict:
+"""
+Current State Analysis:
+a) What query_pinecone currently returns per chunk: text, score, source, source_type, category, citation_label, record_id, chunk_index, section_heading, row_index
+b) Where citations are currently set in run_agent(): Lines 115-117 (inside the manual tool execution loop)
+c) What format citations are currently in when returned: A list of strings
+d) Current top_k value used in search_knowledge_base tool execution: 10
+"""
+
+def retrieve_knowledge_base(query: str, top_k: int = 15) -> dict:
     """
     Searches the Pinecone Drone Intelligence vector database for relevant documentation.
     Use this tool whenever the user asks a general knowledge question about drones, rules, markets, or operations.
     Returns paragraphs of context to help form an answer.
     """
     chunks = query_pinecone(query, top_k=top_k)
+    
+    # Task 2 Implementation: Build citations list directly from citation_label or source
+    # This fulfills the 'search_knowledge_base branch' logic internally in the tool
+    # so that the synthesized response in run_agent() receives the correct list.
+    tool_citations = []
+    for c in chunks:
+        label = c.get("citation_label") or c.get("source")
+        if label and label != "unknown":
+            tool_citations.append(str(label))
+            
     return {
         "context": [c["text"] for c in chunks],
-        "citations": format_citations(chunks)
+        "citations": tool_citations
     }
 
 async def execute_agent(message: str, conversation_history: list = None) -> dict:
     """
+    Renamed internally to run_agent to match requested test patterns,
+    but exported as execute_agent to avoid breaking external routes.
+    """
+    return await run_agent(message, conversation_history)
+
+async def run_agent(message: str, conversation_history: list = None) -> dict:
+    """
     The main agent loop capable of executing functions returning the response.
+    Forces ANY mode for the first call to guarantee tool usage and citations.
     """
     start_time = time.time()
-    local_citations = []
     
     local_mcp_tools = [
         calculate_flight_time,
@@ -56,55 +81,85 @@ async def execute_agent(message: str, conversation_history: list = None) -> dict
         "Once you have gathered the data from the tools, synthesize it into a clean, markdown-formatted response."
     )
 
-    local_agent_model = genai.GenerativeModel(
+    llm = genai.GenerativeModel(
         model_name="models/gemini-3-flash-preview",
         tools=local_mcp_tools,
         system_instruction=system_instruction
     )
 
-    chat = local_agent_model.start_chat(
-        enable_automatic_function_calling=True,
-        history=conversation_history
+    # Change 2: Make chat session fresh per request
+    chat = llm.start_chat(history=[])
+    
+    # Change 1: Force tool_config to ANY mode for the FIRST call
+    tool_config = genai.protos.ToolConfig(
+        function_calling_config=genai.protos.FunctionCallingConfig(
+            mode=genai.protos.FunctionCallingConfig.Mode.ANY
+        )
     )
+
+    response = await chat.send_message_async(message, tool_config=tool_config)
     
-    response = await chat.send_message_async(message)
-    
+    # Manual tool loop handling for the ANY mode requirement
+    # (Since enable_automatic_function_calling=False by omission or after refresh)
+    max_iterations = 5
     raw_citations = []
     tool_used = "llm"
-    
-    # Extract tools and citations directly from the SDK's history AST structs
-    for msg in chat.history:
-        if getattr(msg, "parts", None):
-            for p in msg.parts:
-                # Track which tool was called
-                if getattr(p, "function_call", None):
-                    tool_used = p.function_call.name
-                
-                # Extract citation strings from the returned tool payloads
-                if getattr(p, "function_response", None):
-                    resp = p.function_response.response
-                    resp_dict = {}
-                    if hasattr(type(resp), 'to_dict'):
-                        resp_dict = type(resp).to_dict(resp)
-                    elif hasattr(resp, 'items'):
-                        resp_dict = dict(resp)
+
+    for _ in range(max_iterations):
+        if not response.candidates[0].content.parts or not response.candidates[0].content.parts[0].function_call:
+            break
+            
+        part = response.candidates[0].content.parts[0]
+        if part.function_call:
+            tool_name = part.function_call.name
+            tool_used = tool_name
+            args = dict(part.function_call.args)
+            
+            # Find and execute the tool
+            target_tool = next((t for t in local_mcp_tools if t.__name__ == tool_name), None)
+            if target_tool:
+                try:
+                    # Execute tool (Do not touch execute_tool logic - using direct call)
+                    tool_result = target_tool(**args)
                     
-                    if "citations" in resp_dict:
-                        for c in resp_dict["citations"]:
+                    # Store citations
+                    if isinstance(tool_result, dict) and "citations" in tool_result:
+                        for c in tool_result["citations"]:
                             raw_citations.append(str(c))
-                            
-    # The user requested giving ALL chunks to the UI citations natively, 
-    # instead of strictly filtering them by LLM quoting bounds.
+                    
+                    # The SECOND send_message call - no tool_config added here
+                    response = await chat.send_message_async(
+                        genai.protos.Content(
+                            parts=[genai.protos.Part(
+                                function_response=genai.protos.FunctionResponse(
+                                    name=tool_name,
+                                    response=tool_result
+                                )
+                            )]
+                        )
+                    )
+                except Exception as e:
+                    # Send error back to model
+                    response = await chat.send_message_async(
+                        genai.protos.Content(
+                            parts=[genai.protos.Part(
+                                function_response=genai.protos.FunctionResponse(
+                                    name=tool_name,
+                                    response={"error": str(e)}
+                                )
+                            )]
+                        )
+                    )
+            else:
+                break
+    
+    # Process final response
     citations = list(set(raw_citations))
     answer_text = response.text
             
     # Scrub the raw physical brackets from the final answer text 
-    # to avoid polluting the chat UI (since we render citation cards anyway).
     import re
-    # Safely target any document brackets ending in .csv/.txt/.pdf bounds so we don't accidentally erase code arrays
     answer_text = re.sub(r'\s*\[.*?(?:\.csv|\.txt|\.pdf).*?\]\s*', ' ', answer_text)
-        
-    # Collapse any dangling spaces left directly before punctuation marks like " . " -> "."
     answer_text = re.sub(r'\s+([.,!?;:])', r'\1', answer_text).strip()
 
     processing_time_ms = round((time.time() - start_time) * 1000, 2)
@@ -113,5 +168,7 @@ async def execute_agent(message: str, conversation_history: list = None) -> dict
         "answer": answer_text,
         "citations": citations,
         "tool_used": tool_used,
-        "processing_time_ms": processing_time_ms
+        "model_used": "gemini-3-flash-preview" if tool_used != "error" else "none",
+        "processing_time_ms": processing_time_ms,
+        "success": True
     }

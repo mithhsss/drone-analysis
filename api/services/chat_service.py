@@ -47,7 +47,22 @@ async def handle_chat(message: str, conversation_id: str = None) -> dict:
         agent_result = await execute_agent(message, conversation_history=history)
         answer = agent_result["answer"]
         citations = agent_result["citations"]
-        tool_used = agent_result["tool_used"]
+        tool_used_raw = agent_result.get("tool_used") or "no_tool"
+        
+        # Human-readable mapping for analytics
+        tool_mapping = {
+            "retrieve_knowledge_base": "RAG (Knowledge Base)",
+            "calculate_flight_time": "Flight Time Calculator",
+            "calculate_roi": "ROI Calculator",
+            "check_compliance": "Compliance Checker",
+            "select_drone": "Drone Recommender",
+            "ingest_tool": "Document Ingestion",
+            "no_tool": "Direct Chat (No Tool)",
+            "system_api": "System Action"
+        }
+        tool_used = tool_mapping.get(tool_used_raw, tool_used_raw)
+        
+        model_used = agent_result.get("model_used", "gemini-3-flash-preview")
         processing_time_ms = agent_result["processing_time_ms"]
         
 
@@ -90,5 +105,6 @@ async def handle_chat(message: str, conversation_id: str = None) -> dict:
         "sources": _citations_to_sources(citations),
         "conversation_id": conversation_id,
         "tool_used": tool_used,
+        "model_used": model_used if 'model_used' in locals() else "none",
         "processing_time_ms": processing_time_ms
     }

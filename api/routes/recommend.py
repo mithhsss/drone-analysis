@@ -19,7 +19,7 @@ async def recommend(request: DroneSelectRequest):
         start = time.time()
         result = select_drone(**request.model_dump())
         ms = round((time.time() - start) * 1000, 2)
-        analytics.track("/recommend/drone", f"recommend {request.use_case}", ms)
+        analytics.track("/recommend/drone", f"recommend {request.use_case}", ms, tool_used="Drone Recommender", model_used="none")
         return ToolResponse(
             success=True, tool_used="drone_selector",
             citations=result.pop("citations", []),

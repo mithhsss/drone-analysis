@@ -33,8 +33,17 @@ class UploadResponse(BaseModel):
 
 
 class AnalyticsResponse(BaseModel):
+    generated_at: str = ""
     total_requests: int = 0
     requests_by_endpoint: dict = {}
-    popular_queries: List[str] = []
-    average_response_time_ms: float = 0.0
+    tool_usage_counts: dict = {}
+    query_category_counts: dict = {}
+    response_times: dict = {"avg": 0.0, "min": 0.0, "max": 0.0, "p95": 0.0}
+    recent_queries: List[dict] = []
+    popular_queries: List[dict] = []
+    hourly_distribution: dict = {}
+    model_usage: dict = {}
     pinecone_vector_count: int = 0
+    pinecone_index_name: str = ""
+    success: bool = True
+    processing_time_ms: float = 0.0
